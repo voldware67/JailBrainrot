@@ -1,0 +1,526 @@
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+local Window = WindUI:CreateWindow({
+    Title = "Zero Neo Hub",
+    Icon = "door-open", -- lucide icon
+    Author = "By Cvoda blox",
+    Folder = "MyIdk",
+    
+    -- ↓ This all is Optional. You can remove it.
+    Size = UDim2.fromOffset(580, 460),
+    MinSize = Vector2.new(560, 350),
+    MaxSize = Vector2.new(850, 560),
+    Transparent = true,
+    Theme = "Dark",
+    Resizable = true,
+    SideBarWidth = 200,
+    BackgroundImageTransparency = 0.42,
+    HideSearchBar = true,
+    ScrollBarEnabled = true,
+    
+    -- ↓ Optional. You can remove it.
+    --[[ You can set 'rbxassetid://' or video to Background.
+        'rbxassetid://':
+            Background = "rbxassetid://", -- rbxassetid
+        Video:
+            Background = "video:YOUR-RAW-LINK-TO-VIDEO.webm", -- video 
+    --]]
+    
+})
+
+Window:EditOpenButton({
+    Title = "Open",
+    Icon = "monitor",
+    CornerRadius = UDim.new(0,16),
+    StrokeThickness = 2,
+    Color = ColorSequence.new( -- gradient
+        Color3.fromHex("FF0F7B"), 
+        Color3.fromHex("F89B29")
+    ),
+    OnlyMobile = false,
+    Enabled = true,
+    Draggable = true,
+})
+
+Window:Tag({
+    Title = "Jail a Brainrot",
+    Icon = "github",
+    Color = Color3.fromHex("#30ff6a"),
+    Radius = 0, -- from 0 to 13
+})
+
+local Tab = Window:Tab({
+    Title = "Credits",
+    Icon = "book", -- optional
+    Locked = false,
+})
+
+local Section = Tab:Section({ 
+    Title = "Made By Cvoda_blox",
+})
+
+local Button = Tab:Button({
+    Title = "Discord",
+    Color = Color3.fromHex("#0000FF"), -- paint the button
+    Justify = "Center", -- align items in the center (Center or Between or Left or Right)
+    IconAlign = "Left", -- Left or Right of the text
+    Icon = "thumbs-up", -- removing icon
+    Callback = function()
+        -- ...
+        
+        local link = "https://discord.gg/bZyMGmjqUe"
+
+if setclipboard then
+    setclipboard(link)
+end
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Clipboard",
+    Text = "copy",
+    Duration = 3
+})
+        
+    end
+})
+
+local Button = Tab:Button({
+    Title = "YouTube",
+    Color = Color3.fromHex("#FF0000"), -- paint the button
+    Justify = "Center", -- align items in the center (Center or Between or Left or Right)
+    IconAlign = "Left", -- Left or Right of the text
+    Icon = "youtube", -- removing icon
+    Callback = function()
+        -- ...
+        
+        local link = "https://youtube.com/@cvoda_blox?si=9XkfTpBgl6u60Ijw"
+
+if setclipboard then
+    setclipboard(link)
+end
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Clipboard",
+    Text = "copy",
+    Duration = 3
+})
+        
+    end
+})
+
+local Tab = Window:Tab({
+    Title = "Main",
+    Icon = "shield-check", -- optional
+    Locked = false,
+})
+
+local Button = Tab:Button({
+    Title = "Anti Ragdoll",
+    Color = Color3.fromHex("#a2ff30"), -- paint the button
+    Justify = "Center", -- align items in the center (Center or Between or Left or Right)
+    IconAlign = "Left", -- Left or Right of the text
+    Icon = "arrow-big-up", -- removing icon
+    Callback = function()
+        -- ...
+               
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+RunService.Heartbeat:Connect(function()
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    hum.PlatformStand = false
+    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+
+    hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+    hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+    hum:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+end)
+        
+    end
+})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+
+local TOOL_NAME = "Baseball Bat"
+local TELEPORT_OFFSET = Vector3.new(0, 0, -3)
+
+local Enabled = false
+local LoopConnection
+
+local function EquipTool()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    local tool = LocalPlayer.Backpack:FindFirstChild(TOOL_NAME)
+    if tool then
+        hum:EquipTool(tool)
+    end
+end
+
+local function AutoClick()
+    VirtualUser:Button1Down(Vector2.new(960, 540))
+    task.wait(0.03)
+    VirtualUser:Button1Up(Vector2.new(960, 540))
+end
+
+local function TeleportAll()
+    local myChar = LocalPlayer.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+
+    local myHRP = myChar.HumanoidRootPart
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            plr.Character.HumanoidRootPart.CFrame =
+                myHRP.CFrame * CFrame.new(TELEPORT_OFFSET)
+        end
+    end
+end
+
+local function Start()
+    if Enabled then return end
+    Enabled = true
+
+    LoopConnection = RunService.Heartbeat:Connect(function()
+        if not Enabled then return end
+        EquipTool()
+        TeleportAll()
+        AutoClick()
+    end)
+end
+
+local function Stop()
+    Enabled = false
+    if LoopConnection then
+        LoopConnection:Disconnect()
+        LoopConnection = nil
+    end
+end
+
+local Toggle = Tab:Toggle({
+    Title = "Teleport All + Auto Click",
+    Desc = "Equip Baseball Bat, TP All, Auto Click",
+    Icon = "zap",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            Start()
+        else
+            Stop()
+        end
+    end
+})
+
+local pos1 = Vector3.new(255, 19, -324)
+local pos2 = Vector3.new(280, 19, -108)
+local pos3 = Vector3.new(280, 19, -215)
+
+local teleportDelay = 0.24
+local cameraRotateSpeed = 20
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local running = false
+local tpThread, camThread, promptThread
+
+local function getHRP()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+local function start()
+    if running then return end
+    running = true
+
+    tpThread = task.spawn(function()
+        while running do
+            local hrp = getHRP()
+            hrp.CFrame = CFrame.new(pos1)
+            task.wait(teleportDelay)
+            hrp.CFrame = CFrame.new(pos2)
+            task.wait(teleportDelay)
+            hrp.CFrame = CFrame.new(pos3)
+            task.wait(teleportDelay)
+        end
+    end)
+
+    camThread = task.spawn(function()
+        local angle = 0
+        while running do
+            angle += cameraRotateSpeed
+            camera.CFrame = CFrame.new(camera.CFrame.Position)
+                * CFrame.Angles(0, math.rad(angle), 0)
+            RunService.RenderStepped:Wait()
+        end
+    end)
+
+    promptThread = task.spawn(function()
+        while running do
+            for _, prompt in pairs(workspace:GetDescendants()) do
+                if prompt:IsA("ProximityPrompt") then
+                    pcall(function()
+                        fireproximityprompt(prompt)
+                    end)
+                end
+            end
+            task.wait(0.1)
+        end
+    end)
+end
+
+local function stop()
+    running = false
+end
+
+local Toggle = Tab:Toggle({
+    Title = "Teleport Loop Farm",
+    Desc = "Teleport + Camera + Auto Prompt",
+    Icon = "repeat",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            start()
+        else
+            stop()
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local TELEPORT_POSITION = Vector3.new(149, 19, -198)
+local PROMPT_PATH = workspace 
+
+local Enabled = false
+local PromptConnections = {}
+
+local function TeleportPlayer()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = CFrame.new(TELEPORT_POSITION)
+    end
+end
+
+local function ConnectPrompts()
+    for _, obj in pairs(PROMPT_PATH:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            local conn = obj.Triggered:Connect(function(player)
+                if not Enabled then return end
+                if player ~= LocalPlayer then return end
+
+                task.wait(2) 
+                TeleportPlayer()
+            end)
+            table.insert(PromptConnections, conn)
+        end
+    end
+end
+
+local function DisconnectPrompts()
+    for _, conn in pairs(PromptConnections) do
+        conn:Disconnect()
+    end
+    table.clear(PromptConnections)
+end
+
+local Toggle = Tab:Toggle({
+    Title = "Auto Teleport Base",
+    Desc = "pick up brainrot auto teleport base ",
+    Icon = "map-pin",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        Enabled = state
+        if state then
+            ConnectPrompts()
+        else
+            DisconnectPrompts()
+        end
+    end
+})
+
+local Button = Tab:Button({
+    Title = "Instant Proximity Prompt",
+    Desc = "No Time hold",
+    Locked = false,
+    Callback = function()
+        -- ...
+        
+        local ProximityPromptHoldDuration = 0.1 
+local ChangedObjects = {}
+
+for _, ProximityObject in pairs(workspace:GetDescendants()) do
+
+    if ProximityObject:IsA("ProximityPrompt") then
+
+        ChangedObjects[ProximityObject] = ProximityObject.HoldDuration
+
+        ProximityObject.HoldDuration = ProximityPromptHoldDuration
+
+    end
+
+end
+        
+    end
+})
+
+local Button = Tab:Button({
+    Title = "Unlock Vip",
+    Desc = "Free vip wall",
+    Locked = false,
+    Callback = function()
+        -- ...
+        
+        local model = workspace:WaitForChild("Essentials"):WaitForChild("VIP")
+
+if model then
+    model:Destroy()
+end
+        
+    end
+})
+
+local Tab = Window:Tab({
+    Title = "Local Player",
+    Icon = "hourglass", -- optional
+    Locked = false,
+})
+
+local Slider = Tab:Slider({
+    Title = "Jump Power",
+    Desc = "Change Height jump",
+    Step = 1,
+    Value = {
+        Min = 20,
+        Max = 200,
+        Default = 70,
+    },
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+
+        humanoid.UseJumpPower = true
+        humanoid.JumpPower = value
+    end
+})
+
+local Slider = Tab:Slider({
+    Title = "Speed",
+    Desc = "Change speed",
+    Step = 1,
+    Value = {
+        Min = 20,
+        Max = 120,
+        Default = 70,
+    },
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+
+        humanoid.WalkSpeed = value
+    end
+})
+
+local Button = Tab:Button({
+    Title = "Infinite Yield",
+    Desc = "use iy to fly",
+    Locked = false,
+    Callback = function()
+        -- ...
+        
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        
+    end
+})
+
+local Tab = Window:Tab({
+    Title = "Brainrot",
+    Icon = "cat", -- optional
+    Locked = false,
+})
+
+local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local afterPos = CFrame.new(149, 19, -198)
+
+local running = false
+local loopThread
+
+local function getAllPrompts()
+    local prompts = {}
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and v.Enabled then
+            table.insert(prompts, v)
+        end
+    end
+    return prompts
+end
+
+local function startLoop()
+    loopThread = task.spawn(function()
+        while running do
+            local prompts = getAllPrompts()
+            if #prompts == 0 then
+                task.wait(1)
+                continue
+            end
+
+            local prompt = prompts[math.random(1, #prompts)]
+            local part = prompt.Parent
+
+            if part and part:IsA("BasePart") then
+                hrp.CFrame = part.CFrame * CFrame.new(0, 0, -3)
+                task.wait(0.5)
+
+                pcall(function()
+                    fireproximityprompt(prompt)
+                end)
+
+                task.wait(1)
+
+                hrp.CFrame = afterPos
+                task.wait(1)
+            end
+        end
+    end)
+end
+
+local Toggle = Tab:Toggle({
+    Title = "Teleport random brainrot ",
+    Desc = "Teleport to random brainrot",
+    Value = false,
+    Callback = function(Value)
+        running = Value
+
+        if Value then
+            startLoop()
+        end
+    end
+})
+

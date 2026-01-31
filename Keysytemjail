@@ -107,6 +107,10 @@ game.StarterGui:SetCore("SendNotification", {
     end
 })
 
+local Section = Tab:Section({ 
+    Title = "Update added another script and bug fixes",
+})
+
 local Tab = Window:Tab({
     Title = "Main",
     Icon = "shield-check", -- optional
@@ -524,3 +528,141 @@ local Toggle = Tab:Toggle({
     end
 })
 
+local Button = Tab:Button({
+    Title = "Teleport to secret place",
+    Desc = "Teleport",
+    Locked = false,
+    Callback = function()
+        local player = game:GetService("Players").LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(138, -31, -192)
+            print("Player teleported to 138, -31, -192")
+        else
+            warn("Character atau HumanoidRootPart tidak ditemukan!")
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local selectedTarget = nil
+local slapToggle = false
+
+local function getPlayerList()
+    local list = {"Slap All"}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            table.insert(list, plr.Name)
+        end
+    end
+    return list
+end
+
+local Dropdown = Tab:Dropdown({
+    Title = "slap Player",
+    Desc = "select Target",
+    Values = getPlayerList(),
+    Value = "Slap All",
+    Callback = function(option)
+        selectedTarget = option
+    end
+})
+
+local Toggle = Tab:Toggle({
+    Title = "Auto Slap",
+    Desc = "Troll slap to player",
+    Icon = "bird",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        slapToggle = state
+
+        task.spawn(function()
+            while slapToggle do
+                task.wait(1) 
+
+                local tool = LocalPlayer.Backpack:FindFirstChild("Slap") 
+                             or (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Slap"))
+                if not tool then continue end
+                tool.Parent = LocalPlayer.Character
+
+                local function slapPlayer(target)
+                    if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = target.Character.HumanoidRootPart
+
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = hrp.CFrame * CFrame.new(0, 0, 2)
+
+                        tool:Activate()
+                    end
+                end
+
+                if selectedTarget == "Slap All" then
+                    for _, plr in pairs(Players:GetPlayers()) do
+                        if plr ~= LocalPlayer then
+                            slapPlayer(plr)
+                            task.wait(1) 
+                        end
+                    end
+                else
+                    local target = Players:FindFirstChild(selectedTarget)
+                    if target and target ~= LocalPlayer then
+                        slapPlayer(target)
+                    end
+                end
+            end
+        end)
+    end
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local antiToggle = false
+local lastSafeCFrame = nil
+
+local Toggle = Tab:Toggle({
+    Title = "Anti Ragdoll Fixed",
+    Desc = "anti Ragdoll and slap",
+    Value = false,
+    Callback = function(state)
+        antiToggle = state
+
+        task.spawn(function()
+            while antiToggle do
+                task.wait(0.1)
+                local char = LocalPlayer.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then continue end
+
+                local hrp = char.HumanoidRootPart
+                local hum = char:FindFirstChild("Humanoid")
+                if not hum then continue end
+
+                if hum.Health > 0 and not hum:FindFirstChild("Ragdoll") then
+                    lastSafeCFrame = hrp.CFrame
+                end
+
+                if hum.Health > 0 then
+
+                    if hrp.Velocity.Magnitude > 50 then
+                        if lastSafeCFrame then
+                            hrp.CFrame = lastSafeCFrame
+                            hrp.Velocity = Vector3.new(0,0,0)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+})
+
+local Tab = Window:Tab({
+    Title = "Event",
+    Icon = "bird", -- optional
+    Locked = false,
+})
+
+local Section = Tab:Section({ 
+    Title = "no idea for event, plsss suggestion me on discord i'm confused",
+})
